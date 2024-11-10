@@ -1,0 +1,44 @@
+{
+  "cli": {
+    "version": ">= 13.1.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_a2Vlbi1raWQtNDUuY2xlcmsuYWNjb3VudHMuZGV2JA",
+        "DATABASE_URL": "postgresql://tanker_owner:B9IJjalhnO5F@ep-falling-field-a5c2fx8q.us-east-2.aws.neon.tech/tanker?sslmode=require"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_a2Vlbi1raWQtNDUuY2xlcmsuYWNjb3VudHMuZGV2JA",
+        "DATABASE_URL": "postgresql://tanker_owner:B9IJjalhnO5F@ep-falling-field-a5c2fx8q.us-east-2.aws.neon.tech/tanker?sslmode=require"
+      }
+    },
+    "preview3": {
+      "developmentClient": true,
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_a2Vlbi1raWQtNDUuY2xlcmsuYWNjb3VudHMuZGV2JA",
+        "DATABASE_URL": "postgresql://tanker_owner:B9IJjalhnO5F@ep-falling-field-a5c2fx8q.us-east-2.aws.neon.tech/tanker?sslmode=require"
+      }
+    },
+    "preview4": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_a2Vlbi1raWQtNDUuY2xlcmsuYWNjb3VudHMuZGV2JA",
+        "DATABASE_URL": "postgresql://tanker_owner:B9IJjalhnO5F@ep-falling-field-a5c2fx8q.us-east-2.aws.neon.tech/tanker?sslmode=require"
+      }
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}
