@@ -43,7 +43,8 @@ const Home = () => {
         return;
       }
       const { vehicleId } = JSON.parse(vehicleInfo);
-      const response = await fetchAPI(`/bookings/${vehicleId}`);
+      const response = await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/bookings?id=${vehicleId}`);
+      
       if (response.success) {
         setBookings(response.bookings);
       } else {
@@ -53,6 +54,7 @@ const Home = () => {
       console.error('Error fetching bookings:', error);
     }
   };
+  
 
   useEffect(() => {
     onRefresh();
@@ -73,7 +75,7 @@ const Home = () => {
       }
       const { vehicleId } = JSON.parse(vehicleInfo);
 
-      const response = await fetchAPI(`/actions/${bookingId}`, {
+      const response = await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/trip/actions?id=${bookingId}`, {
         method: 'POST',
         body: JSON.stringify({ action: 'accept', vehicleId })
       });
@@ -102,7 +104,7 @@ const Home = () => {
   const handleReject = async (bookingId: string) => {
     try {
       setLoading(true);
-      const response = await fetchAPI(`/actions/${bookingId}`, {
+      const response = await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/trip/actions?id=${bookingId}`, {
         method: 'POST',
         body: JSON.stringify({ action: 'reject' })
       });
@@ -131,7 +133,7 @@ const Home = () => {
   const handleStartTrip = async (tripId: string) => {
     try {
       setLoading(true);
-      const response = await fetchAPI(`/trip-start/${tripId}`, {
+      const response = await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/trip/start?id=${tripId}`, {
         method: 'POST'
       });
 

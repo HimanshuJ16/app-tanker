@@ -20,7 +20,7 @@ TaskManager.defineTask(LOCATION_TRACKING, async ({ data, error }) => {
     const { locations } = data as { locations: Location.LocationObject[] };
     const location = locations[0];
     try {
-      await fetchAPI(`/trip-location/${id}`, {
+      await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/trip/location?id=${id}`, {
         method: 'POST',
         body: JSON.stringify({
           latitude: location.coords.latitude,
@@ -95,7 +95,7 @@ export default function Trip() {
   const fetchTripDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetchAPI(`/(api)/trip/${id}`);
+      const response = await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/trip/info?id=${id}`);
       
       if (response && response.success) {
         setTripDetails(response.trip);
@@ -124,20 +124,20 @@ export default function Trip() {
   };
 
   const handleReachedHydrant = async () => {
-    try {
-      const response = await fetchAPI(`/trip/${id}/reached-hydrant`, {
-        method: 'POST'
-      });
-      if (response.success) {
-        Alert.alert('Success', 'Hydrant reached status updated');
-        fetchTripDetails();
-      } else {
-        throw new Error(response.error || 'Failed to update hydrant status');
-      }
-    } catch (error) {
-      console.error('Error updating trip status:', error);
-      Alert.alert('Error', 'Failed to update hydrant status. Please try again.');
-    }
+    // try {
+    //   const response = await fetchAPI(`/trip/${id}/reached-hydrant`, {
+    //     method: 'POST'
+    //   });
+    //   if (response.success) {
+    //     Alert.alert('Success', 'Hydrant reached status updated');
+    //     fetchTripDetails();
+    //   } else {
+    //     throw new Error(response.error || 'Failed to update hydrant status');
+    //   }
+    // } catch (error) {
+    //   console.error('Error updating trip status:', error);
+    //   Alert.alert('Error', 'Failed to update hydrant status. Please try again.');
+    // }
   };
 
   // const handleTakePhoto = async () => {

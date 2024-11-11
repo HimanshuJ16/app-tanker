@@ -46,7 +46,7 @@ export default function CombinedAuth() {
     setIsLoading(true);
     try {
       console.log('Attempting to check vehicle:', form.vehicleNumber);
-      const response = await fetchAPI("/vehicle", {
+      const response = await fetchAPI(`${process.env.EXPO_PUBLIC_API_URL}/vehicle`, {
         method: "POST",
         body: JSON.stringify({
           vehicleNumber: form.vehicleNumber,
