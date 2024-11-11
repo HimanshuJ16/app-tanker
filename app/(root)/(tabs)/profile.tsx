@@ -61,7 +61,7 @@ const Profile = () => {
 
         {/* Sign Out Button */}
         <View className="mt-10">
-          <Link href="/(auth)/welcome" onPress={() => signOut()} asChild>
+          <Link href="/(auth)/combined-auth" onPress={() => signOut()} asChild>
             <TouchableOpacity className="bg-blue-500 p-4 rounded-full">
               <Text className="text-center text-white font-semibold text-lg">Sign Out</Text>
             </TouchableOpacity>

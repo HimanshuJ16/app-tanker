@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, RefreshControl, Image } from 'react-native';
 import { fetchAPI } from '@/lib/fetch';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
+import { icons, images } from "@/constants";
 
 interface Booking {
   bookingId: string;
@@ -240,17 +241,28 @@ const Home = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-100 p-4">
       <Text className="text-2xl font-bold mb-4 text-blue-600">PHED Tanker Tracking</Text>
-      <FlatList
-        className='mb-14'
-        data={bookings}
-        renderItem={renderBookingItem}
-        keyExtractor={(item) => item.bookingId}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+      {bookings.length === 0 ? (
+        <View className="flex-1 justify-center items-center">
+          <Image
+            source={images.noResult}
+            style={{ width: 200, height: 200 }}
+            resizeMode="contain"
+          />
+          <Text className="text-gray-500 text-lg mt-4">No bookings found</Text>
+        </View>
+      ) : (
+        <FlatList
+          className="mb-14"
+          data={bookings}
+          renderItem={renderBookingItem}
+          keyExtractor={(item) => item.bookingId}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )}
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
