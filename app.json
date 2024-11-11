@@ -26,7 +26,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.hjuberoi16.apptanker"
+      "package": "com.himanshujangir16.apptanker"
     },
     "web": {
       "bundler": "metro",
@@ -61,7 +61,7 @@
         "origin": "https://uber.dev/"
       },
       "eas": {
-        "projectId": "edc58878-d8ff-4a35-9940-ba3b50633915"
+        "projectId": "cb934581-d7e7-4258-af77-f5734b62aea9"
       }
     }
   }
