@@ -100,8 +100,14 @@ export default function CombinedAuth() {
         Alert.alert("Error", response.error || "Vehicle not found. Please check the vehicle number.");
       }
     } catch (err: any) {
-      console.error('Error in onAuthPress:', JSON.stringify(err, null, 2));
-      Alert.alert("Error", err.message || "An unexpected error occurred");
+      console.error('Error in onAuthPress:', err);
+      if (err.message.includes('Failed to parse response as JSON')) {
+        Alert.alert("Error", "There was a problem with the server response. Please try again later.");
+      } else if (err.message.includes('HTTP error!')) {
+        Alert.alert("Error", "There was a problem connecting to the server. Please check your internet connection and try again.");
+      } else {
+        Alert.alert("Error", err.message || "An unexpected error occurred");
+      }
     }
   };
 

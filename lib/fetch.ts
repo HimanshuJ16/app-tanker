@@ -3,10 +3,24 @@ import { useState, useEffect, useCallback } from "react";
 export const fetchAPI = async (url: string, options?: RequestInit) => {
   try {
     const response = await fetch(url, options);
+    
     if (!response.ok) {
-      new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return await response.json();
+    
+    // Check if the response is empty
+    const text = await response.text();
+    if (!text) {
+      throw new Error('Empty response from server');
+    }
+    
+    // Try to parse the response as JSON
+    try {
+      return JSON.parse(text);
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError);
+      throw new Error(`Failed to parse response as JSON: ${text.substring(0, 100)}...`);
+    }
   } catch (error) {
     console.error("Fetch error:", error);
     throw error;
