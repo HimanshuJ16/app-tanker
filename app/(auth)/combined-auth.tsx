@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import { icons, images } from "@/constants";
-import { fetchAPI, checkConnectivity } from "@/lib/fetch";
+import { fetchAPI } from "@/lib/fetch";
 
 export default function CombinedAuth() {
   const { isLoaded: isSignInLoaded, signIn, setActive: setSignInActive } = useSignIn();
@@ -45,11 +45,6 @@ export default function CombinedAuth() {
     }
     setIsLoading(true);
     try {
-      const isConnected = await checkConnectivity();
-      if (!isConnected) {
-        throw new Error('No internet connection available');
-      }
-
       console.log('Attempting to check vehicle:', form.vehicleNumber);
       const response = await fetchAPI("/vehicle", {
         method: "POST",
