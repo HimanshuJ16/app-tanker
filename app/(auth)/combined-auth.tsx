@@ -1,5 +1,5 @@
 import { useSignIn, useSignUp } from "@clerk/clerk-expo";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { ReactNativeModal } from "react-native-modal";
@@ -8,13 +8,14 @@ import * as SecureStore from 'expo-secure-store';
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import { icons, images } from "@/constants";
-import { fetchAPI } from "@/lib/fetch";
+import { fetchAPI, checkConnectivity } from "@/lib/fetch";
 
 export default function CombinedAuth() {
   const { isLoaded: isSignInLoaded, signIn, setActive: setSignInActive } = useSignIn();
   const { isLoaded: isSignUpLoaded, signUp, setActive: setSignUpActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showAccountIssueModal, setShowAccountIssueModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [form, setForm] = useState({
     vehicleNumber: "",
@@ -42,7 +43,13 @@ export default function CombinedAuth() {
       console.log('Clerk is not loaded yet');
       return;
     }
+    setIsLoading(true);
     try {
+      const isConnected = await checkConnectivity();
+      if (!isConnected) {
+        throw new Error('No internet connection available');
+      }
+
       console.log('Attempting to check vehicle:', form.vehicleNumber);
       const response = await fetchAPI("/vehicle", {
         method: "POST",
@@ -56,14 +63,12 @@ export default function CombinedAuth() {
         console.log('Vehicle exists, initiating OTP verification');
         const phoneNumber = `+91${response.contactNumber}`;
         
-        // Store vehicle information temporarily
         setVehicleInfo({
           vehicleNumber: form.vehicleNumber,
           vehicleId: response.vehicleId,
         });
 
         try {
-          // Try to sign in
           const signInAttempt = await signIn.create({
             identifier: phoneNumber,
           });
@@ -82,7 +87,6 @@ export default function CombinedAuth() {
         } catch (signInError: any) {
           console.log('Sign in failed:', signInError);
           
-          // Attempt sign up as a fallback
           try {
             await signUp.create({
               phoneNumber,
@@ -91,7 +95,6 @@ export default function CombinedAuth() {
             setVerification({ ...verification, state: "pending" });
           } catch (signUpError: any) {
             console.error('Sign up failed:', signUpError);
-            // Both sign-in and sign-up failed, show account issue modal
             setShowAccountIssueModal(true);
           }
         }
@@ -101,34 +104,31 @@ export default function CombinedAuth() {
       }
     } catch (err: any) {
       console.error('Error in onAuthPress:', err);
-      if (err.message.includes('Failed to parse response as JSON')) {
-        Alert.alert("Error", "There was a problem with the server response. Please try again later.");
-      } else if (err.message.includes('HTTP error!')) {
-        Alert.alert("Error", "There was a problem connecting to the server. Please check your internet connection and try again.");
-      } else {
-        Alert.alert("Error", err.message || "An unexpected error occurred");
-      }
+      Alert.alert(
+        "Error",
+        err.message || "An unexpected error occurred. Please try again later."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const onPressVerify = async () => {
     if (!isSignInLoaded || !isSignUpLoaded) return;
+    setIsLoading(true);
     try {
       console.log('Attempting to verify OTP:', verification.code);
       let completeAuth;
       try {
-        // Try sign in verification first
         completeAuth = await signIn.attemptFirstFactor({
           strategy: "phone_code",
           code: verification.code,
         });
         if (completeAuth.status === "complete") {
           await setSignInActive({ session: completeAuth.createdSessionId });
-          // Save vehicle info after successful verification
           await saveVehicleInfo(vehicleInfo);
         }
       } catch (signInError) {
-        // If sign in verification fails, try sign up verification
         completeAuth = await signUp.attemptPhoneNumberVerification({
           code: verification.code,
         });
@@ -146,12 +146,14 @@ export default function CombinedAuth() {
         throw new Error("Verification failed");
       }
     } catch (err: any) {
-      console.error('Error in onPressVerify:', JSON.stringify(err, null, 2));
+      console.error('Error in onPressVerify:', err);
       setVerification({
         ...verification,
         error: err.errors?.[0]?.longMessage || "Verification failed",
         state: "failed",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -182,9 +184,10 @@ export default function CombinedAuth() {
             onChangeText={(value) => setForm({ ...form, vehicleNumber: value })}
           />
           <CustomButton
-            title="Continue"
+            title={isLoading ? "Processing..." : "Continue"}
             onPress={onAuthPress}
             className="mt-6"
+            disabled={isLoading}
           />
         </View>
         <ReactNativeModal
@@ -218,9 +221,10 @@ export default function CombinedAuth() {
               </Text>
             )}
             <CustomButton
-              title="Verify OTP"
+              title={isLoading ? "Verifying..." : "Verify OTP"}
               onPress={onPressVerify}
               className="mt-5 bg-success-500"
+              disabled={isLoading}
             />
           </View>
         </ReactNativeModal>
